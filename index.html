@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento de Placas - Beneplaca</title>
+    <style>
+        :root {
+            --dark: #393939;
+            --dark-red: #4c1923;
+            --light: #f1f0fa;
+            --red: #ba1531;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .calculator-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .calculator-header {
+            background-color: var(--dark-red);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .logo-image {
+            max-width: 200px;
+            display: block;
+            margin: 0 auto;
+            height: auto;
+        }
+        .calculator-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            margin-top: 15px;
+        }
+        .calculator-content {
+            padding: 25px;
+        }
+        .btn-calculate {
+            background-color: var(--red);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+        }
+        .btn-calculate:hover {
+            background-color: #9a1128;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        .wall-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--red);
+        }
+        .wall-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--dark-red);
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            display: none;
+        }
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--dark-red);
+            font-size: 18px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .result-detail {
+            margin-bottom: 10px;
+        }
+        .result-total {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            font-weight: bold;
+            font-size: 17px;
+        }
+        .calculator-form {
+            display: none;
+        }
+        .add-wall-btn {
+            background-color: var(--dark);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .remove-wall-btn {
+            background-color: #ccc;
+            color: var(--dark);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        .walls-container {
+            margin-bottom: 20px;
+        }
+        .client-info {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--dark);
+        }
+        .budget-item {
+            margin-bottom: 8px;
+        }
+        .budget-value {
+            font-weight: bold;
+            color: var(--dark-red);
+        }
+        .budget-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--red);
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--dark);
+        }
+        .payment-options {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .payment-option {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            border-left: 4px solid var(--dark-red);
+        }
+        .payment-title {
+            font-weight: bold;
+            color: var(--dark-red);
+            margin-bottom: 5px;
+        }
+        .payment-instructions {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <img src="logo-beneplaca.png" alt="Beneplaca" class="logo-image">
+            <div class="calculator-title">ORÇAMENTO DE PLACAS DECORATIVAS</div>
+        </div>
+        <div class="calculator-content">
+            <button id="showCalculator" class="btn-calculate">INICIAR ORÇAMENTO</button>
+            
+            <div id="calculatorForm" class="calculator-form">
+                <div class="client-info">
+                    <div class="form-group">
+                        <label for="clientName">Nome do Cliente:</label>
+                        <input type="text" id="clientName" placeholder="Digite o nome do cliente">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientCity">Cidade:</label>
+                        <input type="text" id="clientCity" placeholder="Digite a cidade do cliente">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="model">Modelo da Placa:</label>
+                    <select id="model">
+                        <option value="tijolo">Tijolo</option>
+                        <option value="rustik">Rustik</option>
+                        <option value="timber">Timber</option>
+                        <option value="silicato">Silicato</option>
+                        <option value="moledo">Moledo</option>
+                        <option value="quadratto">Quadratto</option>
+                        <option value="ripado">Ripado</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="unitPrice">Preço Unitário da Placa (R$):</label>
+                    <input type="number" id="unitPrice" placeholder="Digite o preço unitário" step="0.01" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="freightValue">Valor do Frete (R$):</label>
+                    <input type="number" id="freightValue" placeholder="Digite o valor do frete" step="0.01" min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="installation">Deseja instalação?</label>
+                    <select id="installation">
+                        <option value="no">Não</option>
+                        <option value="yes">Sim</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Quantidade de paredes a revestir:</label>
+                    <button id="addWall" class="add-wall-btn">+ Adicionar Parede</button>
+                </div>
+                
+                <div id="wallsContainer" class="walls-container">
+                    <!-- Paredes serão adicionadas aqui dinamicamente -->
+                </div>
+                
+                <button id="calculate" class="btn-calculate">GERAR ORÇAMENTO COMPLETO</button>
+                
+                <div id="result" class="result">
+                    <div class="result-title">ORÇAMENTO</div>
+                    <div id="clientInfo"></div>
+                    <div id="resultDetails"></div>
+                    <div id="budgetDetails"></div>
+                    <div id="resultTotal" class="budget-total"></div>
+                    
+                    <div class="payment-options">
+                        <div class="payment-option">
+                            <div class="payment-title">OPÇÃO 1: Cartão de Crédito (6x sem juros)</div>
+                            <div class="budget-item"><strong>Valor total das placas:</strong> <span id="platesValueCredit" class="budget-value"></span></div>
+                            <div class="budget-item"><strong>Parcelado em 6x de:</strong> <span id="installmentValue" class="budget-value"></span></div>
+                            <div class="payment-instructions">
+                                <strong>Observações:</strong> Frete (R$ <span id="freightValueDisplay"></span>) deve ser pago 1 dia antes da instalação. 
+                                Instalação (R$ <span id="installationValueDisplay"></span>) deve ser paga 50% no dia anterior e 50% após conclusão.
+                            </div>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <div class="payment-title">OPÇÃO 2: 50% no pedido + 50% na entrega (10% de desconto)</div>
+                            <div class="budget-item"><strong>Valor original das placas:</strong> <span id="originalPlatesValue" class="budget-value"></span></div>
+                            <div class="budget-item"><strong>Desconto (10%):</strong> <span id="discount10" class="budget-value"></span></div>
+                            <div class="budget-item"><strong>Valor com desconto:</strong> <span id="platesValue10" class="budget-value"></span></div>
+                            <div class="budget-item"><strong>50% no pedido:</strong> <span id="firstPayment50" class="budget-value"></span></div>
+                            <div class="budget-item"><strong>50% na entrega:</strong> <span id="secondPayment50" class="budget-value"></span></div>
+                            <div class="payment-instructions">
+                                <strong>Observações:</strong> Frete (R$ <span id="freightValueDisplay2"></span>) deve ser pago 1 dia antes da instalação. 
+                                Instalação (R$ <span id="installationValueDisplay2"></span>) deve ser paga 50% no dia anterior e 50% após conclusão.
+                            </div>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <div class="payment-title">OPÇÃO 3: Pagamento à vista (15% de desconto)</div>
+                            <div class="budget-item"><strong>Valor original das placas:</strong> <span id="originalPlatesValueCash" class="budget-value"></span></div>
+                            <div class="budget-item"><strong>Desconto (15%):</strong> <span id="discount15" class="budget-value"></span></div>
+                            <div class="budget-item"><strong>Valor com desconto:</strong> <span id="platesValue15" class="budget-value"></span></div>
+                            <div class="payment-instructions">
+                                <strong>Observações:</strong> Frete (R$ <span id="freightValueDisplay3"></span>) deve ser pago 1 dia antes da instalação. 
+                                Instalação (R$ <span id="installationValueDisplay3"></span>) deve ser paga 50% no dia anterior e 50% após conclusão.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar/ocultar calculadora
+            document.getElementById('showCalculator').addEventListener('click', function() {
+                const form = document.getElementById('calculatorForm');
+                form.style.display = form.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // Adicionar primeira parede
+            addWall();
+            
+            // Botão para adicionar mais paredes
+            document.getElementById('addWall').addEventListener('click', addWall);
+            
+            // Calcular
+            document.getElementById('calculate').addEventListener('click', generateBudget);
+        });
+        
+        let wallCount = 0;
+        
+        function addWall() {
+            wallCount++;
+            const wallsContainer = document.getElementById('wallsContainer');
+            
+            const wallDiv = document.createElement('div');
+            wallDiv.className = 'wall-container';
+            wallDiv.id = 'wall-' + wallCount;
+            
+            wallDiv.innerHTML = `
+                <div class="wall-title">
+                    Parede ${wallCount}
+                    ${wallCount > 1 ? '<button class="remove-wall-btn" onclick="removeWall(' + wallCount + ')">Remover</button>' : ''}
+                </div>
+                <div class="form-group">
+                    <label for="width-${wallCount}">Largura da parede (metros):</label>
+                    <input type="text" id="width-${wallCount}" placeholder="Ex: 3,5 ou 3.5" class="wall-input">
+                </div>
+                <div class="form-group">
+                    <label for="height-${wallCount}">Altura da parede (metros):</label>
+                    <input type="text" id="height-${wallCount}" placeholder="Ex: 2,8 ou 2.8" class="wall-input">
+                </div>
+            `;
+            
+            wallsContainer.appendChild(wallDiv);
+        }
+        
+        function removeWall(wallNumber) {
+            const wallToRemove = document.getElementById('wall-' + wallNumber);
+            if (wallToRemove) {
+                wallToRemove.remove();
+                wallCount--;
+                
+                // Renumerar paredes restantes
+                const walls = document.querySelectorAll('.wall-container');
+                walls.forEach((wall, index) => {
+                    const wallNum = index + 1;
+                    wall.id = 'wall-' + wallNum;
+                    wall.querySelector('.wall-title').innerHTML = `
+                        Parede ${wallNum}
+                        ${wallNum > 1 ? '<button class="remove-wall-btn" onclick="removeWall(' + wallNum + ')">Remover</button>' : ''}
+                    `;
+                });
+            }
+        }
+        
+        function generateBudget() {
+            // Obter informações do cliente
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientCity = document.getElementById('clientCity').value.trim();
+            
+            if (!clientName || !clientCity) {
+                alert('Por favor, preencha o nome e a cidade do cliente.');
+                return;
+            }
+            
+            // Obter informações do orçamento
+            const unitPriceInput = document.getElementById('unitPrice').value.trim();
+            const freightValueInput = document.getElementById('freightValue').value.trim();
+            const installation = document.getElementById('installation').value;
+            
+            if (!unitPriceInput || !freightValueInput) {
+                alert('Por favor, preencha o preço unitário e o valor do frete.');
+                return;
+            }
+            
+            const unitPrice = parseFloat(unitPriceInput.replace(',', '.'));
+            const freightValue = parseFloat(freightValueInput.replace(',', '.'));
+            
+            if (isNaN(unitPrice) || isNaN(freightValue) || unitPrice <= 0 || freightValue < 0) {
+                alert('Por favor, insira valores válidos para preço unitário e frete.');
+                return;
+            }
+            
+            // Obter modelo da placa
+            const model = document.getElementById('model').value;
+            let modelName = '';
+            
+            switch(model) {
+                case 'tijolo': modelName = 'Tijolo'; break;
+                case 'rustik': modelName = 'Rustik'; break;
+                case 'timber': modelName = 'Timber'; break;
+                case 'silicato': modelName = 'Silicato'; break;
+                case 'moledo': modelName = 'Moledo'; break;
+                case 'quadratto': modelName = 'Quadratto'; break;
+                case 'ripado': modelName = 'Ripado'; break;
+            }
+            
+            // Calcular quantidade de placas
+            let totalPlatesAllWalls = 0;
+            let resultHTML = '';
+            let hasValidWalls = false;
+            
+            for (let i = 1; i <= wallCount; i++) {
+                const wallElement = document.getElementById('wall-' + i);
+                if (!wallElement) continue;
+                
+                let widthInput = document.getElementById('width-' + i)?.value.trim();
+                let heightInput = document.getElementById('height-' + i)?.value.trim();
+                
+                if (!widthInput || !heightInput) continue;
+                
+                widthInput = widthInput.replace(',', '.');
+                heightInput = heightInput.replace(',', '.');
+                
+                if (isNaN(widthInput) || isNaN(heightInput)) {
+                    alert(`Por favor, insira valores válidos para a Parede ${i}.`);
+                    return;
+                }
+                
+                const width = parseFloat(widthInput);
+                const height = parseFloat(heightInput);
+                
+                if (width <= 0 || height <= 0) {
+                    alert(`As medidas da Parede ${i} devem ser maiores que zero.`);
+                    return;
+                }
+                
+                hasValidWalls = true;
+                
+                let widthPlates, heightPlates, totalPlates;
+                
+                if (model === 'ripado') {
+                    widthPlates = Math.ceil(width / 0.22);
+                    heightPlates = Math.ceil(height / 2.60);
+                    totalPlates = widthPlates * heightPlates;
+                } else {
+                    let widthDiv = width / 1.1;
+                    let widthDecimal = widthDiv - Math.floor(widthDiv);
+                    
+                    if (widthDecimal <= 0.2) {
+                        widthPlates = Math.floor(widthDiv) + 0.5;
+                    } else {
+                        widthPlates = Math.ceil(widthDiv);
+                    }
+                    
+                    let heightDiv = height / 0.6;
+                    let heightDecimal = heightDiv - Math.floor(heightDiv);
+                    
+                    if (heightDecimal <= 0.2) {
+                        heightPlates = Math.floor(heightDiv) + 0.5;
+                    } else {
+                        heightPlates = Math.ceil(heightDiv);
+                    }
+                    
+                    totalPlates = Math.ceil(widthPlates * heightPlates);
+                }
+                
+                totalPlatesAllWalls += totalPlates;
+                
+                resultHTML += `
+                    <div class="result-detail">
+                        <strong>Parede ${i}:</strong> ${width}m (largura) × ${height}m (altura) → 
+                        <strong>${totalPlates} placas</strong>
+                    </div>
+                `;
+            }
+            
+            if (!hasValidWalls) {
+                alert('Por favor, insira medidas válidas para pelo menos uma parede.');
+                return;
+            }
+            
+            // Calcular valores financeiros
+            const platesValue = totalPlatesAllWalls * unitPrice;
+            const installationValue = installation === 'yes' ? totalPlatesAllWalls * 45 : 0;
+            
+            // Formatar valores monetários
+            const formatCurrency = (value) => {
+                return 'R$ ' + value.toFixed(2).replace('.', ',');
+            };
+            
+            // Mostrar informações do cliente e detalhes do projeto
+            document.getElementById('clientInfo').innerHTML = `
+                <div class="budget-item"><strong>Cliente:</strong> ${clientName}</div>
+                <div class="budget-item"><strong>Cidade:</strong> ${clientCity}</div>
+                <div class="budget-item"><strong>Modelo selecionado:</strong> ${modelName}</div>
+            `;
+            
+            document.getElementById('resultDetails').innerHTML = resultHTML;
+            
+            document.getElementById('budgetDetails').innerHTML = `
+                <div class="budget-item"><strong>Quantidade total de placas:</strong> ${totalPlatesAllWalls}</div>
+                <div class="budget-item"><strong>Preço unitário:</strong> ${formatCurrency(unitPrice)}</div>
+                <div class="budget-item"><strong>Valor total das placas:</strong> <span class="budget-value">${formatCurrency(platesValue)}</span></div>
+                <div class="budget-item"><strong>Valor do frete:</strong> <span class="budget-value">${formatCurrency(freightValue)}</span></div>
+                ${installation === 'yes' ? 
+                    `<div class="budget-item"><strong>Valor total da instalação (R$ 45,00 por placa):</strong> <span class="budget-value">${formatCurrency(installationValue)}</span></div>` : 
+                    ''}
+            `;
+            
+            // Calcular opções de pagamento
+            // Opção 1: Cartão de crédito (6x sem juros)
+            const installmentValue = platesValue / 6;
+            
+            // Opção 2: 50% no pedido + 50% na entrega (10% desconto)
+            const discount10 = platesValue * 0.10;
+            const platesValue10 = platesValue - discount10;
+            const firstPayment50 = platesValue10 / 2;
+            const secondPayment50 = platesValue10 / 2;
+            
+            // Opção 3: À vista (15% desconto)
+            const discount15 = platesValue * 0.15;
+            const platesValue15 = platesValue - discount15;
+            
+            // Preencher opções de pagamento
+            document.getElementById('platesValueCredit').textContent = formatCurrency(platesValue);
+            document.getElementById('installmentValue').textContent = formatCurrency(installmentValue);
+            
+            document.getElementById('originalPlatesValue').textContent = formatCurrency(platesValue);
+            document.getElementById('discount10').textContent = formatCurrency(discount10);
+            document.getElementById('platesValue10').textContent = formatCurrency(platesValue10);
+            document.getElementById('firstPayment50').textContent = formatCurrency(firstPayment50);
+            document.getElementById('secondPayment50').textContent = formatCurrency(secondPayment50);
+            
+            document.getElementById('originalPlatesValueCash').textContent = formatCurrency(platesValue);
+            document.getElementById('discount15').textContent = formatCurrency(discount15);
+            document.getElementById('platesValue15').textContent = formatCurrency(platesValue15);
+            
+            // Preencher valores de frete e instalação em todas as opções
+            const freightElements = document.querySelectorAll('[id^="freightValueDisplay"]');
+            freightElements.forEach(el => el.textContent = formatCurrency(freightValue).replace('R$ ', ''));
+            
+            const installationElements = document.querySelectorAll('[id^="installationValueDisplay"]');
+            installationElements.forEach(el => el.textContent = formatCurrency(installationValue).replace('R$ ', ''));
+            
+            document.getElementById('result').style.display = 'block';
+        }
+
+        // Corrige cache da imagem
+        document.querySelector('.logo-image').src = "logo-beneplaca.png?" + new Date().getTime();
+    </script>
+</body>
+</html>
